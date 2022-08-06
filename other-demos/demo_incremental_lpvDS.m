@@ -27,47 +27,80 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  DATA LOADING OPTION 1: Draw with GUI %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Clear all Data
-% close all; clear all; clc;
-%% Draw batches of data
-% fig1 = figure('Color',[1 1 1]);
-% limits = [-6 6 -2 0.5];
-% axis(limits)
-% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
-% grid on
-% 
-% % Global Attractor of DS
-% att_g = [0 0]';
-% radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
-% scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
-% 
-% % Draw Reference Trajectories
-% data = draw_mouse_data_on_DS(fig1, limits);
-% Data = []; x0_all = [];
-% for l=1:length(data)    
-%     % Check where demos end and shift
-%     data_ = data{l};
-%     data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
-%     data_(3:4,end) = zeros(2,1);
-%     Data = [Data data_];
-%     x0_all = [x0_all data_(1:2,1)];
-% end
-% 
-% % Position/Velocity Trajectories
-% Xi_ref     = Data(1:2,:);
-% Xi_dot_ref = Data(3:end,:);
-% 
-% %% Store as first batch
-% Data_1 = Data;
-% x0_all_1 = x0_all;
-% Xi_ref_1 = Xi_ref;
-% Xi_dot_ref_1 = Xi_dot_ref;
-% 
-% %% Store as second batch
-% Data_2 = Data;
-% x0_all_2 = x0_all;
-% Xi_ref_2 = Xi_ref;
-% Xi_dot_ref_2 = Xi_dot_ref;
+% Clear all Data
+close all; clear all; clc;
+% Draw batches of data
+fig1 = figure('Color',[1 1 1]);
+limits = [-6 6 -2 0.5];
+axis(limits)
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
+grid on
+
+% Global Attractor of DS
+att_g = [0 0]';
+radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
+scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
+
+% Draw Reference Trajectories
+data = draw_mouse_data_on_DS(fig1, limits); close;
+Data = []; x0_all = [];
+for l=1:length(data)    
+    % Check where demos end and shift
+    data_ = data{l};
+    data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
+    data_(3:4,end) = zeros(2,1);
+    Data = [Data data_];
+    x0_all = [x0_all data_(1:2,1)];
+end
+
+% Position/Velocity Trajectories
+Xi_ref     = Data(1:2,:);
+Xi_dot_ref = Data(3:end,:);
+vel_samples = 15; vel_size = 0.85;
+% [h_data, h_vel] = plot_reference_trajectories(Data, vel_samples, vel_size);
+
+% Store as first batch
+Data_1 = Data;
+x0_all_1 = x0_all;
+Xi_ref_1 = Xi_ref;
+Xi_dot_ref_1 = Xi_dot_ref;
+
+% Draw and store second batch
+fig2 = figure('Color',[1 1 1]);
+limits = [-6 6 -2 0.5];
+axis(limits)
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
+grid on
+
+% Global Attractor of DS
+att_g = [0 0]';
+radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
+scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
+
+% Display the first batch
+plot(Xi_ref_1(1,:), Xi_ref_1(2,:),'m.','markersize',10);
+
+data = draw_mouse_data_on_DS(fig2, limits); close;
+Data = []; x0_all = [];
+for l=1:length(data)    
+    % Check where demos end and shift
+    data_ = data{l};
+    data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
+    data_(3:4,end) = zeros(2,1);
+    Data = [Data data_];
+    x0_all = [x0_all data_(1:2,1)];
+end
+
+% Position/Velocity Trajectories
+Xi_ref     = Data(1:2,:);
+Xi_dot_ref = Data(3:end,:);
+vel_samples = 15; vel_size = 0.85;
+% [h_data, h_vel] = plot_reference_trajectories(Data, vel_samples, vel_size);
+
+Data_2 = Data;
+x0_all_2 = x0_all;
+Xi_ref_2 = Xi_ref;
+Xi_dot_ref_2 = Xi_dot_ref;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  DATA LOADING OPTION 2: Choose from LASA DATASET %%
@@ -123,8 +156,8 @@
 %%  DATA LOADING OPTION 3: Load from Pre-drawn Examples %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example Figure. 6
-clear all; close all; clc
-load('./datasets/2D_incremental_1.mat')
+% clear all; close all; clc
+% load('./datasets/2D_incremental_1.mat')
 
 % Example Figure. 7
 % clear all; close all; clc
@@ -399,6 +432,8 @@ clear lyap_fun_comb lyap_der
 P = eye(2);
 % Lyapunov function
 lyap_fun = @(x)lyapunov_function_PQLF(x, att_g, P);
+title_string = {'Lyapunov Function $V(\xi) = (\xi-\xi^*)^T(\xi-\xi^*)$'};
+
 
 % Derivative of Lyapunov function (gradV*f(x))
 lyap_der = @(x)lyapunov_derivative_PQLF(x, att_g, P, ds_lpv_merged);
